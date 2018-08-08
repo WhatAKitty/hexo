@@ -4,6 +4,40 @@
 
     
   <url>
+    <loc>https://xuqiang.me/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%AD%BB%E9%94%81.html</loc>
+    <lastmod>2018-08-08T16:28:50.185Z</lastmod>
+    <data>
+        <display>
+        <title>自定义消息队列死锁</title>
+        <pubTime>2018-08-08T16:21:43.000Z</pubTime>
+        
+        <tag>java</tag>
+         
+        <tag>aqs</tag>
+         
+        <tag>condition</tag>
+         
+        <tag>reentrantLock</tag>
+         
+        <tag>queue</tag>
+         
+         
+           
+             
+              <breadCrumb title="Java" url="https://xuqiang.me/categories/Java/"/>
+          
+             
+              <breadCrumb title="AQS" url="https://xuqiang.me/categories/Java/AQS/"/>
+          
+             
+              <breadCrumb title="Queue" url="https://xuqiang.me/categories/Java/AQS/Queue/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://xuqiang.me/ConcurrentHashMap-RESERVED%E7%8A%B6%E6%80%81%E6%AD%BB%E5%BE%AA%E7%8E%AF.html</loc>
     <lastmod>2018-07-31T16:14:51.000Z</lastmod>
     <data>
@@ -586,6 +620,8 @@
         <title>【翻译】Realm Javascript 1.12.0文档</title>
         <pubTime>2017-10-14T04:12:12.000Z</pubTime>
         
+        <tag>react</tag>
+         
         <tag>realm</tag>
          
         <tag>node</tag>
@@ -595,8 +631,6 @@
         <tag>翻译</tag>
          
         <tag>javascript</tag>
-         
-        <tag>react</tag>
          
          
            

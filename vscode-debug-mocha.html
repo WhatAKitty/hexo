@@ -1,0 +1,73 @@
+<!DOCTYPE HTML><html><head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>VSCode配置支持mocha调试 | WhatAKitty Daily | A Programmer&#39;s Daily Record</title><meta name="author" content="WhatAKitty"><meta name="description" content="Just A Simple Programmer."><meta name="keywords" content="react,es6,debug,vscode,mocha,retainlines,babelrc,node,node_moduels,babel,test,Blog, SSL, Nodejs, DevOps, Spring, Spring Cloud, Jenkins, Docker, JIRA, CI"><meta id="viewport" name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta property="og:title" content="VSCode配置支持mocha调试"><meta property="og:site_name" content="WhatAKitty Daily"><meta property="og:image" content="/favicon.ico"><link href="/favicon.ico" rel="icon"><link rel="alternate" href="/atom.xml" title="WhatAKitty Daily" type="application/atom+xml"><link rel="stylesheet" href="/css/style.css" media="screen" type="text/css"></head><body><div class="blog"><div class="content"><header><div class="site-branding"><h1 class="site-title"><a href="/">WhatAKitty Daily</a></h1><p class="site-description">A Programmer&#39;s Daily Record</p></div><nav class="site-navigation"><ul><li><a href="/">主页</a></li><li><a href="/archives">归档</a></li><li><a href="/projects">项目</a></li><li><a href="/atom.xml">订阅</a></li></ul></nav></header><main class="site-main posts-loop"><article><h3 class="article-title"><span>VSCode配置支持mocha调试</span></h3><div class="article-top-meta"><span class="posted-on"><a href="/vscode-debug-mocha.html" rel="bookmark">WhatAKitty &emsp; <time class="entry-date published" datetime="2018-02-08T16:56:45.000Z">2018-02-09</time></a></span></div><div class="article-content"><div class="entry"><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>在使用VSCode编写一些React组件的时候，经常性需要对某个组件进行单元测试。而VSCode提供了调试的node程序的功能，就希望直接在源码页面上调试，这样更加方便。</p><a id="more"></a><h3 id="启用调试"><a href="#启用调试" class="headerlink" title="启用调试"></a>启用调试</h3><p>点击<code>Debug</code>的标签，如下图：<br><img src="https://static.xuqiang.me/public/images/045058.png" alt="Debug标签内容"></p><p>点击上册的配置按钮，选择<code>Node.js</code>，并在打开的<code>lanuch.json</code>文件复制以下内容：<br></p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"version"</span>: <span class="string">"0.2.0"</span>,</span><br><span class="line">  <span class="string">"configurations"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"name"</span>: <span class="string">"Run mocha"</span>,</span><br><span class="line">      <span class="string">"type"</span>: <span class="string">"node"</span>,</span><br><span class="line">      <span class="string">"request"</span>: <span class="string">"launch"</span>,</span><br><span class="line">      <span class="string">"program"</span>: <span class="string">"$&#123;workspaceRoot&#125;/node_modules/mocha/bin/_mocha"</span>,</span><br><span class="line">      <span class="string">"stopOnEntry"</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="string">"args"</span>: [</span><br><span class="line">        <span class="string">"--no-timeouts"</span>,</span><br><span class="line">        <span class="string">"--require"</span>,</span><br><span class="line">        <span class="string">"./testHelper.js"</span>,</span><br><span class="line">        <span class="string">"--compilers"</span>,</span><br><span class="line">        <span class="string">"js:babel-core/register"</span>,</span><br><span class="line">        <span class="string">"--recursive"</span></span><br><span class="line">      ],</span><br><span class="line">      <span class="string">"cwd"</span>: <span class="string">"$&#123;workspaceRoot&#125;/"</span>,</span><br><span class="line">      <span class="string">"runtimeExecutable"</span>: <span class="literal">null</span>,</span><br><span class="line">      <span class="string">"env"</span>: &#123;</span><br><span class="line">        <span class="string">"NODE_ENV"</span>: <span class="string">"testing"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p>
+<p>并在根目录下增加<code>testHelper.js</code>和<code>registerBabel.js</code>两个文件：<br>testHelper.js:<br></p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">'./registerBabel'</span>);</span><br></pre></td></tr></table></figure><p></p>
+<p>registerBabel.js:<br></p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">'babel-core/register'</span>)(&#123;</span><br><span class="line">  <span class="comment">// babel options</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 在这里可以处理某些特殊的需要，比如对`node_moduels`下某个组件启用babel解析等等</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><p></p>
+<p>抽离这两个文件是为了让正式程序也直接可以调用<code>registerBabel.js</code>文件。</p>
+<p>到此为止，在下列图片内的下拉处选择<code>Run mocha</code>并点击下面图片内的绿色按钮既可以开启调试。<br><img src="https://static.xuqiang.me/public/images/045818.png" alt="run mocha"></p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>不过在处理过程中，发现断点的地方往往与实际不相符，这是因为编译后的源码与实际源码文件的行不一致造成的。只需要在<code>.babelrc</code>文件内加上一个属性即可：<br></p><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"retainLines"</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p>
+      
+    </div>
+
+  </div>
+
+  
+  <div class="article-copyright">
+      <div class="copyright"><p><span>本文标题:</span><a href="/vscode-debug-mocha.html">VSCode配置支持mocha调试</a></p><p><span>文章作者:</span><a href="/" title="访问 WhatAKitty 的个人博客">WhatAKitty</a></p><p><span>发布时间:</span>2018年02月09日 - 00时56分</p><p><span>最后更新:</span>2018年02月09日 - 13时07分</p><p><span>原始链接:</span><a href="/vscode-debug-mocha.html" title="VSCode配置支持mocha调试">https://xuqiang.me/vscode-debug-mocha.html</a> <span class="btn" data-clipboard-text="原文: https://xuqiang.me/vscode-debug-mocha.html　　作者: WhatAKitty" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span></p><p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。</p></div><br><br><style type="text/css">.copyright p .btn{margin-left:1em}.copyright:hover p .btn::after{content:"复制"}.copyright p .btn:hover{color:gray;cursor:pointer}</style>
+  </div>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/VSCode/">VSCode</a>, <a href="/categories/VSCode/Mocha/">Mocha</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/react/">react</a><a href="/tags/mocha/">mocha</a><a href="/tags/vscode/">vscode</a><a href="/tags/debug/">debug</a>
+    </span>
+    
+
+    </div>
+
+    
+    <div class="article-meta pull-right">
+      <span style="display:inline-block;width:83px">
+        <a style="float:left;text-decoration:none" target="_blank" href="https://www.banquanyin.com/u/101709260007755">
+          <img src="https://s1.banquanyin.com/c/icon-yin-24.png" title="更多授权" style="width:inherit">
+        </a>
+        <a target="_blank" href="https://101709260007755.bqy.mobi">
+          <img src="https://s1.banquanyin.com/c/icon-auth-cr-24.png" title="获取授权" style="width:inherit">
+        </a>
+      </span>
+    </div>
+    
+
+    
+  </div>
+
+  
+    <div style="text-align:center;margin-top:80px">
+      <div id="cyReward" role="cylabs" data-use="reward" sid="8a940d4db747add1a86db8c91113e789" cid="1"></div>
+    </div>
+  
+
+</article>
+
+
+  <div id="SOHUCS" sid="8a940d4db747add1a86db8c91113e789"></div><script type="text/javascript">!function(){var t="1243e90ae1a56c027241ecf5b99daeda";(window.innerWidth||document.documentElement.clientWidth)<960?window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=cytdcyLLd&conf='+t+'"><\/script>'):function(t,e){var n=document.getElementsByTagName("head")[0]||document.head||document.documentElement,a=document.createElement("script");a.setAttribute("type","text/javascript"),a.setAttribute("charset","UTF-8"),a.setAttribute("src","https://changyan.sohu.com/upload/changyan.js"),"function"==typeof e&&(window.attachEvent?a.onreadystatechange=function(){var t=a.readyState;"loaded"!==t&&"complete"!==t||(a.onreadystatechange=null,e())}:a.onload=e),n.appendChild(a)}(0,function(){window.changyan.api.config({appid:"cytdcyLLd",conf:t})})}()</script><script type="text/javascript" charset="utf-8" src="https://changyan.itc.cn/js/lib/jquery.js"></script><script type="text/javascript" charset="utf-8" src="https://changyan.sohu.com/js/changyan.labs.https.js?appid=cytdcyLLd"></script>
+    </main>
+
+    <footer class="site-footer"><p class="site-info">Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a><br>&copy; 2018 WhatAKitty<br><a href="https://blog.whatakitty.com">浙ICP备15019585号</a> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602008839" style="display:block;line-height:20px"><span style="display:inline-block;line-height:20px;vertical-align:middle"><img src="https://static.xuqiang.me/public/images/beian.png" style="width:20px;height:20px"></span><span style="display:inline-block;height:20px;line-height:20px;margin:0 0 0 5px">浙公网安备 33010602008839号</span></a></p></footer>
+    
+    <script>var _hmt=_hmt||[];!function(){var e=document.createElement("script");e.src="https://hm.baidu.com/hm.js?1d4c4cd810512d2fddb7187b7939389a";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></div></body></html>

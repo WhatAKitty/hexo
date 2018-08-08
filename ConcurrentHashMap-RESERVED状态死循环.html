@@ -1,0 +1,84 @@
+<!DOCTYPE HTML><html><head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ConcurrentHashMap RESERVED状态死循环 | WhatAKitty Daily | A Programmer&#39;s Daily Record</title><meta name="author" content="WhatAKitty"><meta name="description" content="Just A Simple Programmer."><meta name="keywords" content="collections,java,debug,analysize,concurrenthashmap,hashmap,map,Blog, SSL, Nodejs, DevOps, Spring, Spring Cloud, Jenkins, Docker, JIRA, CI"><meta id="viewport" name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta property="og:title" content="ConcurrentHashMap RESERVED状态死循环"><meta property="og:site_name" content="WhatAKitty Daily"><meta property="og:image" content="/favicon.ico"><link href="/favicon.ico" rel="icon"><link rel="alternate" href="/atom.xml" title="WhatAKitty Daily" type="application/atom+xml"><link rel="stylesheet" href="/css/style.css" media="screen" type="text/css"></head><body><div class="blog"><div class="content"><header><div class="site-branding"><h1 class="site-title"><a href="/">WhatAKitty Daily</a></h1><p class="site-description">A Programmer&#39;s Daily Record</p></div><nav class="site-navigation"><ul><li><a href="/">主页</a></li><li><a href="/archives">归档</a></li><li><a href="/projects">项目</a></li><li><a href="/atom.xml">订阅</a></li></ul></nav></header><main class="site-main posts-loop"><article><h3 class="article-title"><span>ConcurrentHashMap RESERVED状态死循环</span></h3><div class="article-top-meta"><span class="posted-on"><a href="/ConcurrentHashMap-RESERVED状态死循环.html" rel="bookmark">WhatAKitty &emsp; <time class="entry-date published" datetime="2018-07-31T16:11:38.000Z">2018-08-01</time></a></span></div><div class="article-content"><div class="entry"><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>今天本来是想要优化下自己的OTA代码，使得效率更高，结果被现实赤裸裸打了脸。</p><a id="more"></a><h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><p>如下是原先的代码：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;String, Object&gt; holder = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (holder.get(clazzName) == <span class="keyword">null</span>) &#123;</span><br><span class="line">    holder.putIfAbsent(clazzName, createSingleton(clazz, params));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> (T) holder.get(clazzName);</span><br></pre></td></tr></table></figure>
+<p>如上代码是笔者一个单例创建工具的一部分代码，今天在浏览<code>Map</code>接口的时候，发现了几个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">computeIfAbsent</span><span class="params">(K key, Function&lt;? <span class="keyword">super</span> K, ? extends V&gt; mappingFunction)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">computeIfPresent</span><span class="params">(K key, BiFunction&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, ? extends V&gt; remappingFunction)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">compute</span><span class="params">(K key, BiFunction&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, ? extends V&gt; remappingFunction)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>很好，通过这几个方法，可以完美的吧老代码替换为如下代码：<br></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> (T) holder.computeIfAbsent(clazzName, key -&gt; createSingleton(clazz, params));</span><br></pre></td></tr></table></figure><p></p>
+<p>一句话搞定，笔者美滋滋的在更改完毕后运行程序，然后发现了一个非常坑爹的现象：笔者的应用阻塞在某个点上，一致无法执行下去。</p>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><p>一开始，笔者以为是自己的单例创建工具除了问题。</p>
+<p>因为，这个单例工具参照了IOC的设计，将对象存储到容器内。如果有调用方通过类以及构造实参调用，就会判断容器内是否存在，如果存在则直接返回对象、不存在则通过类以及构造实参创建一个实例返回。</p>
+<p>然后在单步调试的过程中，发现竟然卡在了<code>holder.computeIfAbsent</code>这个方法上，那就<code>step into</code>进去看看是什么原因导致的问题。</p>
+<p>最终经过一系列调试，将问题定位在了如下的代码片段：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">boolean</span> added = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">synchronized</span> (f) &#123;</span><br><span class="line">        <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;</span><br><span class="line">            <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                binCount = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">for</span> (Node&lt;K,V&gt; e = f;; ++binCount) &#123;</span><br><span class="line">                    K ek; V ev;</span><br><span class="line">                    <span class="keyword">if</span> (e.hash == h &amp;&amp;</span><br><span class="line">                        ((ek = e.key) == key ||</span><br><span class="line">                         (ek != <span class="keyword">null</span> &amp;&amp; key.equals(ek)))) &#123;</span><br><span class="line">                        val = e.val;</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Node&lt;K,V&gt; pred = e;</span><br><span class="line">                    <span class="keyword">if</span> ((e = e.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> ((val = mappingFunction.apply(key)) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            added = <span class="keyword">true</span>;</span><br><span class="line">                            pred.next = <span class="keyword">new</span> Node&lt;K,V&gt;(h, key, val, <span class="keyword">null</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;</span><br><span class="line">                binCount = <span class="number">2</span>;</span><br><span class="line">                TreeBin&lt;K,V&gt; t = (TreeBin&lt;K,V&gt;)f;</span><br><span class="line">                TreeNode&lt;K,V&gt; r, p;</span><br><span class="line">                <span class="keyword">if</span> ((r = t.root) != <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">                    (p = r.findTreeNode(h, key, <span class="keyword">null</span>)) != <span class="keyword">null</span>)</span><br><span class="line">                    val = p.val;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> ((val = mappingFunction.apply(key)) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    added = <span class="keyword">true</span>;</span><br><span class="line">                    t.putTreeVal(h, key, val);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (binCount != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD)</span><br><span class="line">            treeifyBin(tab, i);</span><br><span class="line">        <span class="keyword">if</span> (!added)</span><br><span class="line">            <span class="keyword">return</span> val;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是<code>ConcurrentHashMap</code>，在获取<code>key</code>所对应的桶（<code>ConcurrentHashMap</code>内部一维数组桶+链表（红黑树）结构）的过程，如果桶不为空且不在扩容的过程中，则会执行上述这段代码。</p>
+<p>这段代码肯定没啥问题，那为啥会导致一直在死循环，而没法进入某个具体的执行过程呢（fh一直小于0，且不是红黑树节点）？</p>
+<p>仔细看了下后，笔者意外的发现，所获取到的节点竟然是一个暂存态节点。什么叫暂存态，即这个节点没有真正初始化完毕，节点的状态为<code>RESERVED</code>（-3）。</p>
+<p>定位到原因：容器内存在正在初始化的节点，好巧不巧的是，另外有调用方使用<code>computeIfAbsent</code>方法，传入的<code>key</code>hash后的节点正好是初始化的节点，那就悲剧了。后面的方法需要等待这个节点初始化完毕后才会执行成功，否则将永远处于<code>while</code>死循环的状态。而笔者的这种情况就是最坏的情况，不知道什么原因导致前者初始化一直完成不了。</p>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>好了，定位到了问题所在，现在的关注点在于，为什么会出现前者一致处于初始化的情况？</p>
+<p>笔者在获取单例的方法上做了断点，每次调用后，都查看下容器内的<code>table</code>属性是否存在初始化的节点。然后发现了某个对象（A）在获取单例后，没有初始化完成，而又在构造方法内进行了单例类（B）的获取。好巧不巧，A和B的<code>key</code>在<code>hash</code>后的桶索引是一样的，也就造成了A对象在等初始化完成，初始化内的B对象在初始化过程中，由于<code>hash</code>冲突，等待节点的初始化完成，完美的形成了死循环。</p>
+<h3 id="疑问点"><a href="#疑问点" class="headerlink" title="疑问点"></a>疑问点</h3><p>问题以及原因虽然找到了，但是为啥之前的写法会没有问题呢？之前也是使用了<code>ConcurrentHashMap</code>作为对象存储的容器，按理也会出现这个问题。仔细看了看代码后，笔者恍然，之前的问题所在主要是<code>computeIfAbsent</code>在调用过程中被阻塞（调用过程中做了对象的创建）。而老的代码是：在创建成功单例类之前，是不存在<code>map.put</code>的过程，自然也不会出现前者的情况。</p>
+      
+    </div>
+
+  </div>
+
+  
+  <div class="article-copyright">
+      <div class="copyright"><p><span>本文标题:</span><a href="/ConcurrentHashMap-RESERVED状态死循环.html">ConcurrentHashMap RESERVED状态死循环</a></p><p><span>文章作者:</span><a href="/" title="访问 WhatAKitty 的个人博客">WhatAKitty</a></p><p><span>发布时间:</span>2018年08月01日 - 00时11分</p><p><span>最后更新:</span>2018年08月01日 - 00时14分</p><p><span>原始链接:</span><a href="/ConcurrentHashMap-RESERVED状态死循环.html" title="ConcurrentHashMap RESERVED状态死循环">https://xuqiang.me/ConcurrentHashMap-RESERVED状态死循环.html</a> <span class="btn" data-clipboard-text="原文: https://xuqiang.me/ConcurrentHashMap-RESERVED状态死循环.html　　作者: WhatAKitty" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span></p><p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。</p></div><br><br><style type="text/css">.copyright p .btn{margin-left:1em}.copyright:hover p .btn::after{content:"复制"}.copyright p .btn:hover{color:gray;cursor:pointer}</style>
+  </div>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java/">Java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/collections/">collections</a><a href="/tags/java/">java</a><a href="/tags/concurrenthashmap/">concurrenthashmap</a>
+    </span>
+    
+
+    </div>
+
+    
+    <div class="article-meta pull-right">
+      <span style="display:inline-block;width:83px">
+        <a style="float:left;text-decoration:none" target="_blank" href="https://www.banquanyin.com/u/101709260007755">
+          <img src="https://s1.banquanyin.com/c/icon-yin-24.png" title="更多授权" style="width:inherit">
+        </a>
+        <a target="_blank" href="https://101709260007755.bqy.mobi">
+          <img src="https://s1.banquanyin.com/c/icon-auth-cr-24.png" title="获取授权" style="width:inherit">
+        </a>
+      </span>
+    </div>
+    
+
+    
+  </div>
+
+  
+    <div style="text-align:center;margin-top:80px">
+      <div id="cyReward" role="cylabs" data-use="reward" sid="e888ec512cf8a8a179e2bb25378ee8d0" cid="1"></div>
+    </div>
+  
+
+</article>
+
+
+  <div id="SOHUCS" sid="e888ec512cf8a8a179e2bb25378ee8d0"></div><script type="text/javascript">!function(){var t="1243e90ae1a56c027241ecf5b99daeda";(window.innerWidth||document.documentElement.clientWidth)<960?window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=cytdcyLLd&conf='+t+'"><\/script>'):function(t,e){var n=document.getElementsByTagName("head")[0]||document.head||document.documentElement,a=document.createElement("script");a.setAttribute("type","text/javascript"),a.setAttribute("charset","UTF-8"),a.setAttribute("src","https://changyan.sohu.com/upload/changyan.js"),"function"==typeof e&&(window.attachEvent?a.onreadystatechange=function(){var t=a.readyState;"loaded"!==t&&"complete"!==t||(a.onreadystatechange=null,e())}:a.onload=e),n.appendChild(a)}(0,function(){window.changyan.api.config({appid:"cytdcyLLd",conf:t})})}()</script><script type="text/javascript" charset="utf-8" src="https://changyan.itc.cn/js/lib/jquery.js"></script><script type="text/javascript" charset="utf-8" src="https://changyan.sohu.com/js/changyan.labs.https.js?appid=cytdcyLLd"></script>
+    </main>
+
+    <footer class="site-footer"><p class="site-info">Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a><br>&copy; 2018 WhatAKitty<br><a href="https://blog.whatakitty.com">浙ICP备15019585号</a> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602008839" style="display:block;line-height:20px"><span style="display:inline-block;line-height:20px;vertical-align:middle"><img src="https://static.xuqiang.me/public/images/beian.png" style="width:20px;height:20px"></span><span style="display:inline-block;height:20px;line-height:20px;margin:0 0 0 5px">浙公网安备 33010602008839号</span></a></p></footer>
+    
+    <script>var _hmt=_hmt||[];!function(){var e=document.createElement("script");e.src="https://hm.baidu.com/hm.js?1d4c4cd810512d2fddb7187b7939389a";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></div></body></html>

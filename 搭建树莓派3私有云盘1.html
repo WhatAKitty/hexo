@@ -1,0 +1,99 @@
+<!DOCTYPE HTML><html><head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>搭建树莓派3私有云盘【一】系统设置 | WhatAKitty Daily | A Programmer&#39;s Daily Record</title><meta name="author" content="WhatAKitty"><meta name="description" content="Just A Simple Programmer."><meta name="keywords" content="树莓派,树莓派3,ngrok,daemon,centos,linux,arm,内网穿透,shell,nginx,php,mariadb,性能优化,Blog, SSL, Nodejs, DevOps, Spring, Spring Cloud, Jenkins, Docker, JIRA, CI"><meta id="viewport" name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta property="og:title" content="搭建树莓派3私有云盘【一】系统设置"><meta property="og:site_name" content="WhatAKitty Daily"><meta property="og:image" content="/favicon.ico"><link href="/favicon.ico" rel="icon"><link rel="alternate" href="/atom.xml" title="WhatAKitty Daily" type="application/atom+xml"><link rel="stylesheet" href="/css/style.css" media="screen" type="text/css"></head><body><div class="blog"><div class="content"><header><div class="site-branding"><h1 class="site-title"><a href="/">WhatAKitty Daily</a></h1><p class="site-description">A Programmer&#39;s Daily Record</p></div><nav class="site-navigation"><ul><li><a href="/">主页</a></li><li><a href="/archives">归档</a></li><li><a href="/projects">项目</a></li><li><a href="/atom.xml">订阅</a></li></ul></nav></header><main class="site-main posts-loop"><article><h3 class="article-title"><span>搭建树莓派3私有云盘【一】系统设置</span></h3><div class="article-top-meta"><span class="posted-on"><a href="/搭建树莓派3私有云盘1.html" rel="bookmark">WhatAKitty &emsp; <time class="entry-date published" datetime="2017-11-27T14:05:29.000Z">2017-11-27</time></a></span></div><div class="article-content"><div class="entry"><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>按照上一章讲解的准备材料，我们开始构建硬件环境以及安装树莓派系统。</p><h3 id="安装系统"><a href="#安装系统" class="headerlink" title="安装系统"></a>安装系统</h3><p>在这里，笔者比较喜欢<code>CentOS</code>系统，所以，笔者选择了<code>CentOS for ARM</code>系统。当然，你也可以选择其他系统作为你的运行环境。</p><p><code>CentOS</code>系统下载地址：<a href="http://mirror.centos.org/altarch/7/isos/armhfp/CentOS-Userland-7-armv7hl-Minimal-1708-RaspberryPi3.img.xz" target="_blank" rel="noopener">http://mirror.centos.org/altarch/7/isos/armhfp/CentOS-Userland-7-armv7hl-Minimal-1708-RaspberryPi3.img.xz</a></p><p>不过，需要注意的是：<strong>这玩意是32bit</strong>，所以在选择程序的时候需要注意这一点。</p><h4 id="烧录系统镜像"><a href="#烧录系统镜像" class="headerlink" title="烧录系统镜像"></a>烧录系统镜像</h4><p>下载成功系统后，我们需要将系统的镜像烧录到SD内。到这里，就有很多方式可以选择了：</p><ul><li>使用windows系统，下载SDFormatter，并使用该工具将映像烧录到SD卡</li><li>使用Ubuntu系统，<code>gnome-disks</code>打开磁盘工具，先删除分区并圈闭裁判工具，之后双击打开下载的镜像（.img.xz），选择需要烧录的目标，直接烧录到SD卡（笔者使用的就是这种方式，相当简单）</li></ul><a id="more"></a><h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><p>烧录成功后，将树莓派连接上电源和显示器，如果在出现一个彩色图片后能够马上进入，那么很幸运你成功了。如果一直卡在那个彩色界面，那么需要进行额外的一步操作（笔者就是如此）。这里需要分不同的烧录系统，由于使用不同烧录环境，所以对应的只能在当时烧录环境打开SD卡内的文本文件，否则会出现乱码。</p><p>比如你之前使用Windows烧录的镜像，那么接下来，你必须在Windows平台上进行操作。</p><p>将SD卡连接上你的电脑后，打开根目录下<code>/boot/config.txt</code>文件。在文件内容末尾处增加如下一行代码：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boot_delay = 1</span><br></pre></td></tr></table></figure><p></p>
+<p>具体啥原因，笔者尚未研究，可能跟树莓派3加载时间有关。笔者是在这里找到的解决方案：<a href="https://www.raspberrypi.org/forums/viewtopic.php?t=55464#p421820" target="_blank" rel="noopener">https://www.raspberrypi.org/forums/viewtopic.php?t=55464#p421820</a> 简直帮了笔者大忙了。</p>
+<h3 id="系统设置"><a href="#系统设置" class="headerlink" title="系统设置"></a>系统设置</h3><p>我们已经可以在显示屏上看到可爱的<code>CentOS</code>登录界面了。接下来就是进行扩容、无线上网以及静态IP等等这些相关设置了。</p>
+<h4 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h4><p>由于是直接烧录镜像安装的系统，所以系统本身会占用所有的SD卡。不过，CentOS给我们提供了一种扩容的解决方案。<br></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /root/README</span><br></pre></td></tr></table></figure><p></p>
+<p>可以看到如下内容：</p>
+<blockquote>
+<p>== CentOS 7 userland ==</p>
+<p>If you want to automatically resize your / partition, just type the following (as root user):<br>/usr/bin/rootfs-expand</p>
+</blockquote>
+<p>很好，这样就知道如何进行扩容了。<br></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/rootfs-expand</span><br></pre></td></tr></table></figure><p></p>
+<p>再看下现在的分区情况：</p>
+<blockquote>
+<p>Filesystem      Size  Used Avail Use% Mounted on<br>/dev/root        28G  2.6G   24G  10% /<br>devtmpfs        460M     0  460M   0% /dev<br>tmpfs           464M     0  464M   0% /dev/shm<br>tmpfs           464M   13M  452M   3% /run<br>tmpfs           464M     0  464M   0% /sys/fs/cgroup<br>/dev/mmcblk0p1  500M   50M  451M  10% /boot<br>tmpfs            93M     0   93M   0% /run/user/0</p>
+</blockquote>
+<p>可以看到，我们的<code>/dev/root</code>分区，由开始的几个G口冲到了28G的大小。</p>
+<h4 id="无线上网"><a href="#无线上网" class="headerlink" title="无线上网"></a>无线上网</h4><p>由于无线上网需要安装额外的软件，所以我们先通过网线达到上网的目的。接下来，在命令窗口输入如下命令安装无线模块：<br></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --location https://github.com/RPi-Distro/firmware-nonfree/raw/54bab3d6a6d43239c71d26464e6e10e5067ffea7/brcm80211/brcm/brcmfmac43430-sdio.bin &gt; /usr/lib/firmware/brcm/brcmfmac43430-sdio.bin</span><br></pre></td></tr></table></figure><p></p>
+<p>之后，重启树莓派<code>reboot</code>。</p>
+<p>当我们重启完成后，我们就可以通过<code>nmcli</code>命令实现搜索无线网络并连接无线网络等等操作。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmcli d wifi # 查看可连接的无线网络列表</span><br><span class="line">nmcli d wifi connect yourSSID password 'yourWifiPasswd' # 使用你的无线网络密码连接无线网络</span><br><span class="line">nmcli d show wlan0 # 查看你无线网络状态</span><br></pre></td></tr></table></figure>
+<h4 id="静态IP"><a href="#静态IP" class="headerlink" title="静态IP"></a>静态IP</h4><p>成功连接无线网络后，就需要设置一个静态IP，可以使我们通过SSH客户端远程连接树莓派。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/network-script/ifcfg-&#123;yourSSID&#125; # 设置你的无线网络配置</span><br></pre></td></tr></table></figure>
+<p>设置IP获取方式为静态设置，并设置IP地址以及网关等等：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BOOTPROTO=static          #静态IP</span><br><span class="line">IPADDR=192.168.31.160     #IP地址</span><br><span class="line">GATEWAY=192.168.31.1      #默认网关</span><br><span class="line">NETMASK=255.255.255.0     #子网掩码</span><br></pre></td></tr></table></figure><p></p>
+<p>之后，修改DNS地址：<br></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/resolv.conf</span><br></pre></td></tr></table></figure><p></p>
+<p>设置网关地址：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nameserver 114.114.114.114</span><br></pre></td></tr></table></figure><p></p>
+<p>之后重启下树莓派，否则可能会出现MAC冲突然后报错的情况。<code>reboot</code></p>
+<h4 id="修改时区"><a href="#修改时区" class="headerlink" title="修改时区"></a>修改时区</h4><p>由于默认使用的并非是本地时区，所以需要修改纠正：<br></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum install -y ntp</span><br><span class="line">systemctl enable ntpd</span><br><span class="line">systemctl start ntpd</span><br><span class="line"></span><br><span class="line">cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span><br></pre></td></tr></table></figure><p></p>
+<h3 id="搭建硬件环境"><a href="#搭建硬件环境" class="headerlink" title="搭建硬件环境"></a>搭建硬件环境</h3><p>Ok, 已经基本设置完成，接下来，我们就可以将树莓派链接上电源、装上壳子、风扇等等外置设备了。</p>
+<p>接下来就将开始搭建LNMP的WEB环境了。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a href="http://mirror.centos.org/altarch/7/isos/armhfp" target="_blank" rel="noopener">http://mirror.centos.org/altarch/7/isos/armhfp</a></li>
+<li><a href="https://www.raspberrypi.org/forums/viewtopic.php" target="_blank" rel="noopener">https://www.raspberrypi.org/forums/viewtopic.php</a></li>
+<li><a href="http://blog.csdn.net/fo11ower/article/details/53223475" target="_blank" rel="noopener">http://blog.csdn.net/fo11ower/article/details/53223475</a></li></ul>
+      
+    </div>
+
+  </div>
+
+  
+  <div class="article-copyright">
+      <div class="copyright"><p><span>本文标题:</span><a href="/搭建树莓派3私有云盘1.html">搭建树莓派3私有云盘【一】系统设置</a></p><p><span>文章作者:</span><a href="/" title="访问 WhatAKitty 的个人博客">WhatAKitty</a></p><p><span>发布时间:</span>2017年11月27日 - 22时05分</p><p><span>最后更新:</span>2017年11月27日 - 22时59分</p><p><span>原始链接:</span><a href="/搭建树莓派3私有云盘1.html" title="搭建树莓派3私有云盘【一】系统设置">https://xuqiang.me/搭建树莓派3私有云盘1.html</a> <span class="btn" data-clipboard-text="原文: https://xuqiang.me/搭建树莓派3私有云盘1.html　　作者: WhatAKitty" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span></p><p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。</p></div><br><br><style type="text/css">.copyright p .btn{margin-left:1em}.copyright:hover p .btn::after{content:"复制"}.copyright p .btn:hover{color:gray;cursor:pointer}</style>
+  </div>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Linux/">Linux</a>, <a href="/categories/Linux/私有云盘/">私有云盘</a>, <a href="/categories/Linux/私有云盘/树莓派/">树莓派</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/ngrok/">ngrok</a><a href="/tags/linux/">linux</a><a href="/tags/内网穿透/">内网穿透</a><a href="/tags/树莓派/">树莓派</a><a href="/tags/私有云盘/">私有云盘</a>
+    </span>
+    
+
+    </div>
+
+    
+    <div class="article-meta pull-right">
+      <span style="display:inline-block;width:83px">
+        <a style="float:left;text-decoration:none" target="_blank" href="https://www.banquanyin.com/u/101709260007755">
+          <img src="https://s1.banquanyin.com/c/icon-yin-24.png" title="更多授权" style="width:inherit">
+        </a>
+        <a target="_blank" href="https://101709260007755.bqy.mobi">
+          <img src="https://s1.banquanyin.com/c/icon-auth-cr-24.png" title="获取授权" style="width:inherit">
+        </a>
+      </span>
+    </div>
+    
+
+    
+  </div>
+
+  
+    <div style="text-align:center;margin-top:80px">
+      <div id="cyReward" role="cylabs" data-use="reward" sid="3181818e99d92e7ea2d2b822ebdf3f35" cid="1"></div>
+    </div>
+  
+
+</article>
+
+
+  <div id="SOHUCS" sid="3181818e99d92e7ea2d2b822ebdf3f35"></div><script type="text/javascript">!function(){var t="1243e90ae1a56c027241ecf5b99daeda";(window.innerWidth||document.documentElement.clientWidth)<960?window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=cytdcyLLd&conf='+t+'"><\/script>'):function(t,e){var n=document.getElementsByTagName("head")[0]||document.head||document.documentElement,a=document.createElement("script");a.setAttribute("type","text/javascript"),a.setAttribute("charset","UTF-8"),a.setAttribute("src","https://changyan.sohu.com/upload/changyan.js"),"function"==typeof e&&(window.attachEvent?a.onreadystatechange=function(){var t=a.readyState;"loaded"!==t&&"complete"!==t||(a.onreadystatechange=null,e())}:a.onload=e),n.appendChild(a)}(0,function(){window.changyan.api.config({appid:"cytdcyLLd",conf:t})})}()</script><script type="text/javascript" charset="utf-8" src="https://changyan.itc.cn/js/lib/jquery.js"></script><script type="text/javascript" charset="utf-8" src="https://changyan.sohu.com/js/changyan.labs.https.js?appid=cytdcyLLd"></script>
+    </main>
+
+    <footer class="site-footer"><p class="site-info">Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a><br>&copy; 2018 WhatAKitty<br><a href="https://blog.whatakitty.com">浙ICP备15019585号</a> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602008839" style="display:block;line-height:20px"><span style="display:inline-block;line-height:20px;vertical-align:middle"><img src="https://static.xuqiang.me/public/images/beian.png" style="width:20px;height:20px"></span><span style="display:inline-block;height:20px;line-height:20px;margin:0 0 0 5px">浙公网安备 33010602008839号</span></a></p></footer>
+    
+    <script>var _hmt=_hmt||[];!function(){var e=document.createElement("script");e.src="https://hm.baidu.com/hm.js?1d4c4cd810512d2fddb7187b7939389a";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></div></body></html>

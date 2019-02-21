@@ -2,16 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://xuqiang.me/%E5%A4%9A%E4%B8%AAAspectJ%E5%AF%B9%E5%90%8C%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E6%93%8D%E4%BD%9C%E4%BA%A7%E7%94%9F%E7%9A%84%E5%AE%9E%E9%99%85%E6%95%88%E6%9E%9C%E4%BB%A5%E5%8F%8A%E9%A1%BA%E5%BA%8F%E6%83%85%E5%86%B5.html</loc>
+    <loc>https://xuqiang.me/Validator%E5%86%85%E5%9B%BD%E9%99%85%E5%8C%96%E6%9C%AA%E7%94%9F%E6%95%88%E7%9A%84%E8%A7%A3%E5%86%B3.html</loc>
     
-    <lastmod>2018-08-20T15:14:10.539Z</lastmod>
+    <lastmod>2019-02-21T15:29:40.225Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xuqiang.me/2018-plan.html</loc>
+    
+    <lastmod>2019-02-20T15:58:10.124Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xuqiang.me/%E4%B8%80%E8%87%B4%E6%80%A7hash%E5%BA%94%E7%94%A8%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86.html</loc>
+    
+    <lastmod>2018-10-19T17:07:01.627Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xuqiang.me/finally-return%E5%9C%A8JVM%E7%BA%A7%E5%88%AB%E7%9A%84%E8%A7%A3%E9%87%8A.html</loc>
+    
+    <lastmod>2018-09-25T11:26:12.556Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xuqiang.me/Spring-Bean%E8%A7%A3%E6%9E%90%E5%88%86%E6%9E%90%E8%BF%87%E7%A8%8B.html</loc>
+    
+    <lastmod>2018-08-23T16:43:09.990Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://xuqiang.me/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%AD%BB%E9%94%81.html</loc>
     
-    <lastmod>2018-08-08T16:28:50.185Z</lastmod>
+    <lastmod>2018-08-20T15:20:52.899Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xuqiang.me/%E5%A4%9A%E4%B8%AAAspectJ%E5%AF%B9%E5%90%8C%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E6%93%8D%E4%BD%9C%E4%BA%A7%E7%94%9F%E7%9A%84%E5%AE%9E%E9%99%85%E6%95%88%E6%9E%9C%E4%BB%A5%E5%8F%8A%E9%A1%BA%E5%BA%8F%E6%83%85%E5%86%B5.html</loc>
+    
+    <lastmod>2018-08-20T15:14:10.539Z</lastmod>
     
   </url>
   
@@ -54,13 +89,6 @@
     <loc>https://xuqiang.me/Java%E5%B9%B6%E5%8F%91%E9%94%81-%E7%BB%86%E7%B2%92%E5%BA%A6%E9%94%81.html</loc>
     
     <lastmod>2018-06-30T11:38:54.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xuqiang.me/2018-plan.html</loc>
-    
-    <lastmod>2018-06-30T09:16:09.000Z</lastmod>
     
   </url>
   

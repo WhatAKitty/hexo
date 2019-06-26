@@ -1,1 +1,1 @@
-https://xuqiang.me/一次JVM-Crash分析.html
+https://xuqiang.me/DDD-console-example.html

@@ -216,9 +216,9 @@
     
       <category term="spring" scheme="https://xuqiang.me/tags/spring/"/>
     
-      <category term="aop" scheme="https://xuqiang.me/tags/aop/"/>
-    
       <category term="bean" scheme="https://xuqiang.me/tags/bean/"/>
+    
+      <category term="aop" scheme="https://xuqiang.me/tags/aop/"/>
     
   </entry>
   
@@ -248,11 +248,11 @@
     
       <category term="spring" scheme="https://xuqiang.me/tags/spring/"/>
     
+      <category term="aop" scheme="https://xuqiang.me/tags/aop/"/>
+    
       <category term="aspectj" scheme="https://xuqiang.me/tags/aspectj/"/>
     
       <category term="cglib" scheme="https://xuqiang.me/tags/cglib/"/>
-    
-      <category term="aop" scheme="https://xuqiang.me/tags/aop/"/>
     
   </entry>
   

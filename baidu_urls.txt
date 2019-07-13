@@ -1,1 +1,10 @@
 https://xuqiang.me/2019-07-13-debug-javac-in-idea.html
+https://xuqiang.me/DDD-console-example.html
+https://xuqiang.me/一次JVM-Crash分析.html
+https://xuqiang.me/JSR269插件化注解API.html
+https://xuqiang.me/Validator内国际化未生效的解决.html
+https://xuqiang.me/一致性hash应用于分布式数据处理.html
+https://xuqiang.me/finally-return在JVM级别的解释.html
+https://xuqiang.me/Spring-Bean解析分析过程.html
+https://xuqiang.me/多个AspectJ对同一个对象操作产生的实际效果以及顺序情况.html
+https://xuqiang.me/自定义消息队列死锁.html

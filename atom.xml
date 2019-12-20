@@ -238,9 +238,9 @@
       <category term="JVM" scheme="https://xuqiang.me/categories/Java/JVM/"/>
     
     
-      <category term="jvm" scheme="https://xuqiang.me/tags/jvm/"/>
-    
       <category term="java" scheme="https://xuqiang.me/tags/java/"/>
+    
+      <category term="jvm" scheme="https://xuqiang.me/tags/jvm/"/>
     
       <category term="linux" scheme="https://xuqiang.me/tags/linux/"/>
     
@@ -358,11 +358,11 @@
       <category term="JVM" scheme="https://xuqiang.me/categories/Java/JVM/"/>
     
     
+      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
+    
       <category term="jvm" scheme="https://xuqiang.me/tags/jvm/"/>
     
       <category term="bytecode" scheme="https://xuqiang.me/tags/bytecode/"/>
-    
-      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
     
   </entry>
   
@@ -484,9 +484,9 @@
       <category term="Java" scheme="https://xuqiang.me/categories/Java/"/>
     
     
-      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
-    
       <category term="collections" scheme="https://xuqiang.me/tags/collections/"/>
+    
+      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
     
       <category term="concurrenthashmap" scheme="https://xuqiang.me/tags/concurrenthashmap/"/>
     
@@ -510,9 +510,9 @@
       <category term="JavaSources" scheme="https://xuqiang.me/categories/JavaSources/"/>
     
     
-      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
-    
       <category term="collections" scheme="https://xuqiang.me/tags/collections/"/>
+    
+      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
     
       <category term="hashmap" scheme="https://xuqiang.me/tags/hashmap/"/>
     
@@ -608,9 +608,9 @@
       <category term="Collections" scheme="https://xuqiang.me/categories/Java/Concurrent/Collections/"/>
     
     
-      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
-    
       <category term="collections" scheme="https://xuqiang.me/tags/collections/"/>
+    
+      <category term="java" scheme="https://xuqiang.me/tags/java/"/>
     
       <category term="concurrent" scheme="https://xuqiang.me/tags/concurrent/"/>
     

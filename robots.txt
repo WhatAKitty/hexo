@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /20*
+Allow: /archives/
+Allow: /categories/
+Allow: /tags/
+Disallow: /css/
+Disallow: /images/
+Disallow: /.well-known/
+
+Sitemap: https://blog.whatakitty.com/sitemap.xml
+Sitemap: https://blog.whatakitty.com/baidusitemap.xml
+
+Sitemap: https://blog.gonode.cn/sitemap.xml
+Sitemap: https://blog.gonode.cn/baidusitemap.xml
+
+Sitemap: https://blog.xuqiang.me/sitemap.xml
+Sitemap: https://blog.xuqiang.me/baidusitemap.xml
+
+Sitemap: https://xuqiang.me/sitemap.xml
+Sitemap: https://xuqiang.me/baidusitemap.xml

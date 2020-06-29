@@ -1,3 +1,5 @@
+https://xuqiang.me/Eureka内核逻辑解析.html
+https://xuqiang.me/how-to-learn-opensource-framework.html
 https://xuqiang.me/2019-12-14-how-to-design-short-domain-system.html
 https://xuqiang.me/linux-startup-analyize.html
 https://xuqiang.me/how-es-choose-and-get-filed-info.html
@@ -6,5 +8,3 @@ https://xuqiang.me/build-c-remote-compile-env.html
 https://xuqiang.me/2019-07-13-debug-javac-in-idea.html
 https://xuqiang.me/DDD-console-example.html
 https://xuqiang.me/一次JVM-Crash分析.html
-https://xuqiang.me/JSR269插件化注解API.html
-https://xuqiang.me/Validator内国际化未生效的解决.html
